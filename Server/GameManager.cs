@@ -7,7 +7,7 @@ class GameManager
 {
     private readonly Dictionary<IWebSocketConnection, GameObject> ClientsList = new();
     private List<GameObject> GameObjects = new();
-    private readonly int GameObjectNumber = 2;
+    private readonly int GameObjectNumber = 2000;
     private readonly int MapHeight = 4000;
     private readonly int MapWidth = 4000;
 
