@@ -18,9 +18,14 @@ class GameObject
     public GameObjectType Type { get; set; }
     public int? Id { get; set; }
 
-    public GameObject() {}
+    public GameObject() { }
 
-    public GameObject(int posX, int posY, float radius, GameObjectType type = GameObjectType.Default)
+    public GameObject(
+        int posX,
+        int posY,
+        float radius,
+        GameObjectType type = GameObjectType.Default
+    )
     {
         PosX = posX;
         PosY = posY;

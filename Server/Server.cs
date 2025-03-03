@@ -1,51 +1,56 @@
 using System.Text.Json;
 using Fleck;
-namespace BagarIo;
 
-class Server
+namespace BagarIo
 {
-    private readonly WebSocketServer _webSocketServer;
-    private readonly GameManager _gameManager;
-
-    public Server(string url)
+    class Server
     {
-        _webSocketServer = new WebSocketServer(url);
-        _gameManager = new GameManager();
-    }
+        private readonly WebSocketServer _webSocketServer;
+        private readonly GameManager _gameManager;
 
-    public void Start()
-    {
-        _webSocketServer.Start(socket =>
+        public Server(string url)
         {
-            socket.OnOpen = () =>
-            {
-                Console.WriteLine($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
-                _gameManager.AddNewClient(socket);
-            };
+            _webSocketServer = new WebSocketServer(url);
+            _gameManager = new GameManager();
+        }
 
-            socket.OnClose = () =>
+        public void Start()
+        {
+            _webSocketServer.Start(socket =>
             {
-                Console.WriteLine("Client disconnected.");
-                _gameManager.RemoveClient(socket);
-            };
-
-            socket.OnMessage = message =>
-            {
-                try
+                socket.OnOpen = () =>
                 {
-                    var player = JsonSerializer.Deserialize<GameObject>(message);
-                    _gameManager.UpdateClientList(socket, player);
-                    _gameManager.UpdateGameData();
-                }
-                catch
+                    Console.WriteLine(
+                        $"New client connected: {socket.ConnectionInfo.ClientIpAddress}"
+                    );
+                    _gameManager.AddNewClient(socket);
+                };
+
+                socket.OnClose = () =>
                 {
-                    Console.WriteLine("Failed to deserialize JSON.");
-                }
+                    Console.WriteLine("Client disconnected.");
+                    _gameManager.RemoveClient(socket);
+                };
 
-                _gameManager.SendClientsGameData();
-            };
-        });
+                socket.OnMessage = message =>
+                {
+                    try
+                    {
+                        Console.WriteLine(message);
+                        var player = JsonSerializer.Deserialize<GameObject>(message);
+                        _gameManager.UpdateClientList(socket, player);
+                        _gameManager.UpdateGameData();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Failed to deserialize JSON.");
+                    }
 
-        Console.WriteLine($"WebSocket server started at {_webSocketServer.Location}");
+                    _gameManager.SendClientsGameData();
+                };
+            });
+
+            Console.WriteLine($"WebSocket server started at {_webSocketServer.Location}");
+        }
     }
 }

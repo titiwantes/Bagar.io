@@ -103,12 +103,7 @@ class GameManager
     {
         if (player == null)
             return;
-
         if (ClientsList.TryGetValue(socket, out var existingClient))
-        {
-            existingClient.PosX = player.PosX;
-            existingClient.PosY = player.PosY;
-            existingClient.Radius = player.Radius;
-        }
+            ClientsList[socket] = player;
     }
 }
